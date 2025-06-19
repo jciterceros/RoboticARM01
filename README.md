@@ -30,4 +30,14 @@ Este é um projeto **muito antigo**, criado originalmente em **2010** usando o a
 
 **Autor original:** JciTech (2010)
 
-_Reencontrado e mantido por diversão e nostalgia._ 
+_Reencontrado e mantido por diversão e nostalgia._
+
+## Imagens do Projeto
+
+### Screenshot da Tela do Projeto
+
+![Screenshot da tela do projeto](docs/images/screenshot.png)
+
+### Animação do Braço Robótico
+
+![Animação do braço robótico](docs/images/Robotic_ARM01.gif) 
