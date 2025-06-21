@@ -1,0 +1,45 @@
+# Compilados e binários
+bin/
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.out
+*.app
+*.log
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários de editores
+*~
+*.swp
+*.swo
+*.tmp
+
+# VSCode
+.vscode/
+!.vscode/c_cpp_properties.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Backup e cache do VSCode
+.vscode/browse.vc.db
+.vscode/ipch/
+
+# Arquivos de configuração locais
+*.user
+*.sdf
+*.suo
+*.VC.db
+*.VC.opendb
+
+# Arquivos de lock
+*.lock
+
+# Outros
+*.bak
+*.old
+*.orig 
