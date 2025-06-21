@@ -1,0 +1,74 @@
+graph TD
+    %% Módulo de Simulação
+    ModuloSimulacao[⚙️ Módulo de Simulação]
+    
+    ComponenteBase[🔧 Componente Base<br/>Rotação da base<br/>do braço robótico]
+    
+    ComponenteBraco[🦾 Componente Braço<br/>Movimento do braço<br/>principal]
+    
+    ComponenteAntebraco[💪 Componente Antebraço<br/>Movimento do antebraço]
+    
+    ComponenteMao[✋ Componente Mão/Pinça<br/>Movimento da mão<br/>e controle da pinça]
+    
+    %% Módulo de Interface Gráfica
+    ModuloGrafico[🎨 Módulo de Interface Gráfica]
+    
+    RenderizadorOpenGL[🎭 Renderizador OpenGL<br/>Renderização 3D<br/>e configurações gráficas]
+    
+    GerenciadorJanela[🪟 Gerenciador de Janela<br/>GLUT Window<br/>e viewport]
+    
+    %% Módulo de Entrada
+    ModuloEntrada[⌨️ Módulo de Entrada]
+    
+    HandlerTeclado[⌨️ Handler de Teclado<br/>Processa teclas<br/>1-9, A, S, etc.]
+    
+    HandlerMouse[🖱️ Handler de Mouse<br/>Processa cliques<br/>e zoom]
+    
+    %% Módulo de Animação
+    ModuloAnimacao[🎬 Módulo de Animação]
+    
+    ControladorAnimacao[🎭 Controlador de Animação<br/>Gerencia animações<br/>automáticas]
+    
+    %% Relacionamentos - Simulação
+    ModuloSimulacao --> ComponenteBase
+    ModuloSimulacao --> ComponenteBraco
+    ModuloSimulacao --> ComponenteAntebraco
+    ModuloSimulacao --> ComponenteMao
+    
+    %% Relacionamentos - Gráficos
+    ModuloGrafico --> RenderizadorOpenGL
+    ModuloGrafico --> GerenciadorJanela
+    
+    %% Relacionamentos - Entrada
+    ModuloEntrada --> HandlerTeclado
+    ModuloEntrada --> HandlerMouse
+    
+    %% Relacionamentos - Animação
+    ModuloAnimacao --> ControladorAnimacao
+    
+    %% Interações entre módulos
+    HandlerTeclado -->|"Comandos de movimento"| ComponenteBase
+    HandlerTeclado -->|"Comandos de movimento"| ComponenteBraco
+    HandlerTeclado -->|"Comandos de movimento"| ComponenteAntebraco
+    HandlerTeclado -->|"Comandos de movimento"| ComponenteMao
+
+    HandlerMouse -->|"Controles de câmera"| GerenciadorJanela
+    
+    ControladorAnimacao -->|"Animações automáticas"| ComponenteBase
+    ControladorAnimacao -->|"Animações automáticas"| ComponenteBraco
+    ControladorAnimacao -->|"Animações automáticas"| ComponenteAntebraco
+    ControladorAnimacao -->|"Animações automáticas"| ComponenteMao
+    
+    ComponenteBase -->|"Renderiza"| RenderizadorOpenGL
+    ComponenteBraco -->|"Renderiza"| RenderizadorOpenGL
+    ComponenteAntebraco -->|"Renderiza"| RenderizadorOpenGL
+    ComponenteMao -->|"Renderiza"| RenderizadorOpenGL
+    
+    %% Estilo
+    classDef module fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef component fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef handler fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class ModuloSimulacao,ModuloGrafico,ModuloEntrada,ModuloAnimacao module
+    class ComponenteBase,ComponenteBraco,ComponenteAntebraco,ComponenteMao,RenderizadorOpenGL,GerenciadorJanela,ControladorAnimacao component
+    class HandlerTeclado,HandlerMouse handler 

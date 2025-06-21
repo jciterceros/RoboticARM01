@@ -1,0 +1,32 @@
+graph TD
+    %% Usuário
+    Usuario[👤 Usuário]
+    
+    %% Containers principais
+    AppRoboticARM01[🤖 Aplicação RoboticARM01<br/>C++ Application<br/>Simulação 3D do braço robótico]
+    
+    ModuloGrafico[🎨 Módulo de Interface Gráfica<br/>OpenGL/GLUT<br/>Renderização 3D e janela]
+    
+    ModuloSimulacao[⚙️ Módulo de Simulação<br/>Lógica do braço robótico<br/>Cálculos de movimento]
+    
+    ModuloEntrada[⌨️ Módulo de Entrada<br/>Teclado/Mouse<br/>Controles do usuário]
+    
+    %% Relacionamentos
+    Usuario -->|"Interage via"| ModuloEntrada
+    ModuloEntrada -->|"Envia comandos para"| ModuloSimulacao
+    ModuloSimulacao -->|"Atualiza estado para"| ModuloGrafico
+    ModuloGrafico -->|"Exibe resultado para"| Usuario
+    
+    %% Dependências internas
+    AppRoboticARM01 -.->|"Contém"| ModuloGrafico
+    AppRoboticARM01 -.->|"Contém"| ModuloSimulacao
+    AppRoboticARM01 -.->|"Contém"| ModuloEntrada
+    
+    %% Estilo
+    classDef user fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef container fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef module fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class Usuario user
+    class AppRoboticARM01 container
+    class ModuloGrafico,ModuloSimulacao,ModuloEntrada module 

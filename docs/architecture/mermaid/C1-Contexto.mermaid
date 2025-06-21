@@ -1,0 +1,25 @@
+graph TD
+    %% Usuário principal
+    Usuario[👤 Usuário<br/>Interage com a simulação<br/>do braço robótico]
+    
+    %% Sistema principal
+    RoboticARM01[🤖 RoboticARM01<br/>Simulação 3D do<br/>Braço Robótico]
+    
+    %% Sistemas externos
+    SistemaOperacional[💻 Sistema Operacional<br/>Windows/Linux/macOS<br/>Fornece recursos do sistema]
+    
+    BibliotecasOpenGL[🎨 Bibliotecas OpenGL<br/>GL, GLU, GLUT<br/>Renderização 3D]
+    
+    %% Relacionamentos
+    Usuario -->|"Controla movimento<br/>Visualiza simulação"| RoboticARM01
+    RoboticARM01 -->|"Executa em"| SistemaOperacional
+    RoboticARM01 -->|"Utiliza para<br/>renderização"| BibliotecasOpenGL
+    
+    %% Estilo
+    classDef user fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef system fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class Usuario user
+    class RoboticARM01 system
+    class SistemaOperacional,BibliotecasOpenGL external 
