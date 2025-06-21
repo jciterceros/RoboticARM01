@@ -12,9 +12,9 @@ static float rotAngle = 0., rotAngle2 = 0.;
 //GLUquadricObj *pObj; // Quadric Object
 
 GLfloat angle, fAspect;
-GLUquadricObj *quadratic; //Novo tipo de dado para criação do Objeto cilindro
+GLUquadricObj *quadratic; //Novo tipo de dado para criaï¿½ï¿½o do Objeto cilindro
 */
-// Inicializa parâmetros de rendering
+// Inicializa parï¿½metros de rendering
 
 static int AW=0,ASW=0;
 
@@ -24,7 +24,7 @@ void Inicializa (void)
 { 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     
-   	GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
+   GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
 	GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};	   // "cor" 
 //	GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho" 
 	GLfloat luzEspecular[4]={-0.5, -0.5, -0.5, 1.0};// "brilho" 
@@ -39,33 +39,33 @@ void Inicializa (void)
 	GLint especMaterial = 60;
 
 
- 	// Especifica que a cor de fundo da janela será preta
+ 	// Especifica que a cor de fundo da janela serï¿½ preta
 //	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glClearColor(0.0f, 0.25f, 0.25f, 1.0f); // fundo atualmente cinza
 	
-	// Habilita o modelo de colorização de Gouraud
+	// Habilita o modelo de colorizaï¿½ï¿½o de Gouraud
 	glShadeModel(GL_SMOOTH);
 
-	// Define a refletância do material 
+	// Define a refletï¿½ncia do material 
 	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
-	// Define a concentração do brilho
+	// Define a concentraï¿½ï¿½o do brilho
 	glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
 
 	// Ativa o uso da luz ambiente 
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 
-	// Define os parâmetros da luz de número 0
+	// Define os parï¿½metros da luz de nï¿½mero 0
 	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente); 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
 	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
 	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
 
-	// Habilita a definição da cor do material a partir da cor corrente
+	// Habilita a definiï¿½ï¿½o da cor do material a partir da cor corrente
 	glEnable(GL_COLOR_MATERIAL);
-	//Habilita o uso de iluminação
+	//Habilita o uso de iluminaï¿½ï¿½o
 	glEnable(GL_LIGHTING);  
-	// Habilita a luz de número 0
+	// Habilita a luz de nï¿½mero 0
 	glEnable(GL_LIGHT0);
 	// Habilita o depth-buffering
 	glEnable(GL_DEPTH_TEST);
@@ -80,15 +80,15 @@ void Inicializa (void)
     
 }
 
-// Função usada para especificar o volume de visualização
+// Funï¿½ï¿½o usada para especificar o volume de visualizaï¿½ï¿½o
 void EspecificaParametrosVisualizacao(void)
 {
-	// Especifica sistema de coordenadas de projeção
+	// Especifica sistema de coordenadas de projeï¿½ï¿½o
 	glMatrixMode(GL_PROJECTION);
-	// Inicializa sistema de coordenadas de projeção
+	// Inicializa sistema de coordenadas de projeï¿½ï¿½o
 	glLoadIdentity();
 
-	// Especifica a projeção perspectiva
+	// Especifica a projeï¿½ï¿½o perspectiva
 	gluPerspective(angle,fAspect,0.1,400);
 
 	// Especifica sistema de coordenadas do modelo
@@ -96,26 +96,26 @@ void EspecificaParametrosVisualizacao(void)
 	// Inicializa sistema de coordenadas do modelo
 	glLoadIdentity();
 
-	// Especifica posição do observador e do alvo
+	// Especifica posiï¿½ï¿½o do observador e do alvo
 	//gluLookAt(0.5,5,0.5, 0,0,0, 0,10,0);
 //	gluLookAt (7.5, 7.5, -12.5, 2.5, 2.5, -5.0, 0.0, 1.0, 0.0);
 //	gluLookAt (5, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-//  FunçãoGLUT(Observador(x,y,z), Objeto(x,y,z), Plano(x,y,z))
+//  Funï¿½ï¿½oGLUT(Observador(x,y,z), Objeto(x,y,z), Plano(x,y,z))
 //  gluLookAt (5, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 //                     * 
 	gluLookAt (15, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
-// Função callback chamada quando o tamanho da janela é alterado 
+// Funï¿½ï¿½o callback chamada quando o tamanho da janela ï¿½ alterado 
 void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 {
-	// Para previnir uma divisão por zero
+	// Para previnir uma divisï¿½o por zero
 	if ( h == 0 ) h = 1;
 
 	// Especifica o tamanho da viewport
 	glViewport(0, 0, w, h);
  
-	// Calcula a correção de aspecto
+	// Calcula a correï¿½ï¿½o de aspecto
 	fAspect = (GLfloat)w/(GLfloat)h;
 
 	EspecificaParametrosVisualizacao();
@@ -231,9 +231,9 @@ void Desenha(void)
     glColor3f (1.0, 1.0, 1.0);
     glLineWidth (1.5);
 
-    if (AW==1) {Animacao0();} // Animação de movimiento 
+    if (AW==1) {Animacao0();} // Animaï¿½ï¿½o de movimiento 
     if (ASW==1)
-       {Animacao2();}  // Animação de um planta de fabrica
+       {Animacao2();}  // Animaï¿½ï¿½o de um planta de fabrica
     else
        {BrazoRobot();}
 	// Executa os comandos OpenGL
