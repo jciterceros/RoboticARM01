@@ -9,7 +9,7 @@
 // Variáveis globais para compatibilidade
 static int anim_flags[3] = {0, 0, 0}; // AW, ASW, APW
 int SW=0, SWB=0, SWBR=0, SWABR=0, SWMA=0;
-static int i=0,j=0,k=0;
+int i=0,j=0,k=0;
 static int Xmouse=0,Ymouse=0;
 static float rotAngle = 0., rotAngle2 = 0.;
 
@@ -72,21 +72,6 @@ void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 	fAspect = (GLfloat)w/(GLfloat)h;
 
 	EspecificaParametrosVisualizacao();
-}
-
-void Animacao2()
-{
-     for(j=1;j<=3;j++)
-        {
-          for(i=1;i<=3;i++)
-             {
-                glPushMatrix();
-                      glTranslatef (15.0, 0.0, -15.0);
-                      glTranslatef (-10.5*i, 0.0,10.5*j);
-                      BrazoRobot();
-                glPopMatrix();
-             }
-        }
 }
 
 void Animacao3()

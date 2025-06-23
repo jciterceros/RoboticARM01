@@ -8,6 +8,8 @@ extern int SW;
 extern int SWB, SWBR, SWABR, SWMA;
 extern RobotArm robot_arm;
 extern float Brazo, AnteBrazo, Mano;
+extern void BrazoRobot(void);
+extern int i, j;
 
 void Animacao(void)
 {
@@ -92,4 +94,19 @@ void Animacao1(void)
     AnteBrazo = 0;
     Mano = 0;
     glutPostRedisplay();
+}
+
+void Animacao2(void)
+{
+    for(j=1;j<=3;j++)
+    {
+        for(i=1;i<=3;i++)
+        {
+            glPushMatrix();
+            glTranslatef (15.0, 0.0, -15.0);
+            glTranslatef (-10.5*i, 0.0,10.5*j);
+            BrazoRobot();
+            glPopMatrix();
+        }
+    }
 } 
