@@ -1,28 +1,30 @@
 #include <GL/glut.h>
 #include <stdlib.h>
-#include "BrazoRobot.h"
-/*
-static int Brazo = 0, AnteBrazo = 0, Mano = 0;
-static float Base = 0;//, Brazo = 0, AnteBrazo = 0, Mano = 0;
-static int Solido = 0, SW = 0;
+#include <math.h>
+#include "robot/robot_arm.h"
+
+// Variáveis globais para compatibilidade
+static int AW=0,ASW=0,APW=0;
+static int SW=0, SWB=0, SWBR=0, SWABR=0, SWMA=0;
 static int i=0,j=0,k=0;
 static int Xmouse=0,Ymouse=0;
 static float rotAngle = 0., rotAngle2 = 0.;
 
-//GLUquadricObj *pObj; // Quadric Object
+// Variáveis globais do braço (mantidas para compatibilidade)
+static float Base = 0, Pinza=0.70, Brazo = 0, AnteBrazo = 0, Mano = 0;
+static float LimBase = 135, LimBrazo = 180, LimAnteBrazo = 145, LimMano = 125, LimPinza=0.40;
+static int Solido = 0;
 
 GLfloat angle, fAspect;
-GLUquadricObj *quadratic; //Novo tipo de dado para cria��o do Objeto cilindro
-*/
-// Inicializa par�metros de rendering
-
-static int AW=0,ASW=0;
+GLUquadricObj *quadratic;
 
 void Animacao1();
+void Animacao3();
 
+// Inicializa parâmetros de rendering
 void Inicializa (void)
 { 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     
    GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
 	GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};	   // "cor" 
@@ -39,33 +41,33 @@ void Inicializa (void)
 	GLint especMaterial = 60;
 
 
- 	// Especifica que a cor de fundo da janela ser� preta
-//	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ 	// Especifica que a cor de fundo da janela será preta
+	// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glClearColor(0.0f, 0.25f, 0.25f, 1.0f); // fundo atualmente cinza
 	
-	// Habilita o modelo de coloriza��o de Gouraud
+	// Habilita o modelo de colorização de Gouraud
 	glShadeModel(GL_SMOOTH);
 
-	// Define a reflet�ncia do material 
+	// Define a refletância do material 
 	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
-	// Define a concentra��o do brilho
+	// Define a concentração do brilho
 	glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
 
 	// Ativa o uso da luz ambiente 
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 
-	// Define os par�metros da luz de n�mero 0
+	// Define os parâmetros da luz de número 0
 	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente); 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
 	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
 	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
 
-	// Habilita a defini��o da cor do material a partir da cor corrente
+	// Habilita a definição da cor do material a partir da cor corrente
 	glEnable(GL_COLOR_MATERIAL);
-	//Habilita o uso de ilumina��o
+	//Habilita o uso de iluminação
 	glEnable(GL_LIGHTING);  
-	// Habilita a luz de n�mero 0
+	// Habilita a luz de número 0
 	glEnable(GL_LIGHT0);
 	// Habilita o depth-buffering
 	glEnable(GL_DEPTH_TEST);
@@ -76,19 +78,22 @@ void Inicializa (void)
     //AnteBrazo = -157.5; 
     //Mano = 0;
 
+    // Inicializar o braço robótico
+    robot_arm_init(&robot_arm);
+
     Animacao1();
     
 }
 
-// Fun��o usada para especificar o volume de visualiza��o
+// Função usada para especificar o volume de visualização
 void EspecificaParametrosVisualizacao(void)
 {
-	// Especifica sistema de coordenadas de proje��o
+	// Especifica sistema de coordenadas de projeção
 	glMatrixMode(GL_PROJECTION);
-	// Inicializa sistema de coordenadas de proje��o
+	// Inicializa sistema de coordenadas de projeção
 	glLoadIdentity();
 
-	// Especifica a proje��o perspectiva
+	// Especifica a projeção perspectiva
 	gluPerspective(angle,fAspect,0.1,400);
 
 	// Especifica sistema de coordenadas do modelo
@@ -96,26 +101,26 @@ void EspecificaParametrosVisualizacao(void)
 	// Inicializa sistema de coordenadas do modelo
 	glLoadIdentity();
 
-	// Especifica posi��o do observador e do alvo
+	// Especifica posição do observador e do alvo
 	//gluLookAt(0.5,5,0.5, 0,0,0, 0,10,0);
 //	gluLookAt (7.5, 7.5, -12.5, 2.5, 2.5, -5.0, 0.0, 1.0, 0.0);
 //	gluLookAt (5, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-//  Fun��oGLUT(Observador(x,y,z), Objeto(x,y,z), Plano(x,y,z))
+//  FunçãoGLUT(Observador(x,y,z), Objeto(x,y,z), Plano(x,y,z))
 //  gluLookAt (5, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 //                     * 
 	gluLookAt (15, 10, -5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
-// Fun��o callback chamada quando o tamanho da janela � alterado 
+// Função callback chamada quando o tamanho da janela é alterado 
 void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 {
-	// Para previnir uma divis�o por zero
+	// Para previnir uma divisão por zero
 	if ( h == 0 ) h = 1;
 
 	// Especifica o tamanho da viewport
 	glViewport(0, 0, w, h);
  
-	// Calcula a corre��o de aspecto
+	// Calcula a correção de aspecto
 	fAspect = (GLfloat)w/(GLfloat)h;
 
 	EspecificaParametrosVisualizacao();
@@ -141,53 +146,54 @@ void Animacao(void)
 
 void Animacao0()
 {
-    float T1 = 0.52;
+   // float T1 = 0.52;
+   float T1 = 0.02;
 	if (SWB==0)
 	   {
-         Base+=T1;
-         if (Base>=LimBase)
+         robot_arm_move_base(&robot_arm, T1);
+         if (robot_arm.base.angle >= robot_arm.base.max_angle)
             {SWB=1;}
        }
 	else
        {
-         Base-=T1;
-         if (Base<=(-LimBase))
+         robot_arm_move_base(&robot_arm, -T1);
+         if (robot_arm.base.angle <= robot_arm.base.min_angle)
             {SWB=0;}         
        }
 	if (SWBR==0)
 	   {
-         Brazo+=T1;
-         if (Brazo>=LimBrazo)
+         robot_arm_move_shoulder(&robot_arm, T1);
+         if (robot_arm.shoulder.angle >= robot_arm.shoulder.max_angle)
             {SWBR=1;}
        }
 	else
        {
-         Brazo-=T1;
-         if (Brazo<=(180-LimBrazo))
+         robot_arm_move_shoulder(&robot_arm, -T1);
+         if (robot_arm.shoulder.angle <= robot_arm.shoulder.min_angle)
             {SWBR=0;}         
        }
 	if (SWABR==0)
 	   {
-         AnteBrazo+=T1;
-         if (AnteBrazo>=LimAnteBrazo)
+         robot_arm_move_elbow(&robot_arm, T1);
+         if (robot_arm.elbow.angle >= robot_arm.elbow.max_angle)
             {SWABR=1;}
        }
 	else
        {
-         AnteBrazo-=T1;
-         if (AnteBrazo<=(-LimAnteBrazo))
+         robot_arm_move_elbow(&robot_arm, -T1);
+         if (robot_arm.elbow.angle <= robot_arm.elbow.min_angle)
             {SWABR=0;}         
        }
 	if (SWMA==0)
 	   {
-         Mano+=T1;
-         if (Mano>=LimMano)
+         robot_arm_move_wrist(&robot_arm, T1);
+         if (robot_arm.wrist.angle >= robot_arm.wrist.max_angle)
             {SWMA=1;}
        }
 	else
        {
-         Mano-=T1;
-         if (Mano<=(-LimMano))
+         robot_arm_move_wrist(&robot_arm, -T1);
+         if (robot_arm.wrist.angle <= robot_arm.wrist.min_angle)
             {SWMA=0;}         
        }
 
@@ -220,7 +226,162 @@ void Animacao2()
         }
 }
 
+void Animacao3()
+{
+    // ===== CONSTANTES DE VELOCIDADE - AJUSTE AQUI =====
+    const float VELOCIDADE_INTERPOLACAO = 0.001f;    // Velocidade de transição entre posições (0.01-0.05)
+    const float VELOCIDADE_OMBRO = 0.001f;            // Velocidade do movimento do ombro (0.1-0.5)
+    const float VELOCIDADE_PINCA_ABRIR = 0.001f;     // Velocidade de abertura da pinça (0.005-0.02)
+    const float VELOCIDADE_PINCA_FECHAR = 0.001f;   // Velocidade de fechamento da pinça (0.01-0.03)
+    const float VELOCIDADE_DELTA_TIME = 0.0001f;      // Delta time para física (0.005-0.02)
+    // =================================================
+    
+    static int phase = 0;
+    static float time = 0.0f;
+    static float target_x = 0.0f, target_y = 0.0f, target_z = 0.0f;
+    static float gripper_opening = 0.65f;
+    static int object_grabbed = 0;
+    
+    float dt = VELOCIDADE_DELTA_TIME;
+    time += dt;
+    
+    // Fase 0: Posição inicial
+    if (phase == 0) {
+        // Reset para posição inicial
+        robot_arm.base.angle = 0.0f;
+        robot_arm.shoulder.angle = 45.0f;
+        robot_arm.elbow.angle = -45.0f;
+        robot_arm.wrist.angle = 0.0f;
+        gripper_opening = 0.65f;
+        object_grabbed = 0;
+        phase = 1;
+    }
+    // Fase 1: Mover para posição de pegar objeto
+    else if (phase == 1) {
+        target_x = 2.0f;
+        target_y = 1.5f;
+        target_z = 0.0f;
+        
+        // Cinemática inversa simplificada para posição alvo
+        float dx = target_x - 0.0f;
+        float dy = target_y - 0.0f;
+        float distance = sqrt(dx*dx + dy*dy);
+        
+        // Calcular ângulos usando trigonometria
+        float base_angle = atan2(dy, dx) * 180.0f / 3.14159f;
+        float shoulder_angle = 45.0f + (distance * 10.0f);
+        float elbow_angle = -shoulder_angle * 0.8f;
+        
+        // Aplicar movimento suave com interpolação mais lenta
+        robot_arm.base.angle += (base_angle - robot_arm.base.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.shoulder.angle += (shoulder_angle - robot_arm.shoulder.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.elbow.angle += (elbow_angle - robot_arm.elbow.angle) * VELOCIDADE_INTERPOLACAO;
+        
+        if (fabs(robot_arm.base.angle - base_angle) < 1.0f && 
+            fabs(robot_arm.shoulder.angle - shoulder_angle) < 1.0f) {
+            phase = 2;
+        }
+    }
+    // Fase 2: Abrir pinça e descer
+    else if (phase == 2) {
+        gripper_opening += VELOCIDADE_PINCA_ABRIR;
 
+        robot_arm.shoulder.angle -= VELOCIDADE_OMBRO;
+        
+      //   if (gripper_opening >= 1.0f && robot_arm.shoulder.angle <= 30.0f) {
+        if (gripper_opening >= 1.10f && robot_arm.shoulder.angle <= 30.0f) {
+            phase = 3;
+        }
+    }
+    // Fase 3: Fechar pinça (pegar objeto)
+    else if (phase == 3) {
+        gripper_opening -= VELOCIDADE_PINCA_FECHAR;
+        
+        if (gripper_opening <= 0.65f) {//0.4f) {
+            object_grabbed = 1;
+            phase = 4;
+        }
+    }
+    // Fase 4: Levantar com objeto
+    else if (phase == 4) {
+        robot_arm.shoulder.angle += VELOCIDADE_OMBRO;
+        
+        if (robot_arm.shoulder.angle >= 60.0f) {
+            phase = 5;
+        }
+    }
+    // Fase 5: Mover para posição de soltar
+    else if (phase == 5) {
+        target_x = -2.0f;
+        target_y = 1.5f;
+        target_z = 0.0f;
+        
+        float dx = target_x - 0.0f;
+        float dy = target_y - 0.0f;
+        float distance = sqrt(dx*dx + dy*dy);
+        
+        float base_angle = atan2(dy, dx) * 180.0f / 3.14159f;
+        float shoulder_angle = 45.0f + (distance * 10.0f);
+        float elbow_angle = -shoulder_angle * 0.8f;
+        
+        // Interpolação mais lenta
+        robot_arm.base.angle += (base_angle - robot_arm.base.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.shoulder.angle += (shoulder_angle - robot_arm.shoulder.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.elbow.angle += (elbow_angle - robot_arm.elbow.angle) * VELOCIDADE_INTERPOLACAO;
+        
+        if (fabs(robot_arm.base.angle - base_angle) < 1.0f && 
+            fabs(robot_arm.shoulder.angle - shoulder_angle) < 1.0f) {
+            phase = 6;
+        }
+    }
+    // Fase 6: Descer e soltar objeto
+    else if (phase == 6) {
+        robot_arm.shoulder.angle -= VELOCIDADE_OMBRO;
+        
+        if (robot_arm.shoulder.angle <= 30.0f) {
+            phase = 7;
+        }
+    }
+    // Fase 7: Abrir pinça (soltar objeto)
+    else if (phase == 7) {
+        gripper_opening += VELOCIDADE_PINCA_FECHAR;
+        
+        if (gripper_opening >= 1.0f) {
+            object_grabbed = 0;
+            phase = 8;
+        }
+    }
+    // Fase 8: Voltar à posição inicial
+    else if (phase == 8) {
+        // Interpolação mais lenta para retorno
+        robot_arm.base.angle += (0.0f - robot_arm.base.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.shoulder.angle += (45.0f - robot_arm.shoulder.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.elbow.angle += (-45.0f - robot_arm.elbow.angle) * VELOCIDADE_INTERPOLACAO;
+        robot_arm.wrist.angle += (0.0f - robot_arm.wrist.angle) * VELOCIDADE_INTERPOLACAO;
+        gripper_opening += (0.65f - gripper_opening) * VELOCIDADE_INTERPOLACAO;
+        
+        if (fabs(robot_arm.base.angle) < 1.0f && 
+            fabs(robot_arm.shoulder.angle - 45.0f) < 1.0f &&
+            fabs(robot_arm.elbow.angle + 45.0f) < 1.0f) {
+            phase = 0; // Reiniciar ciclo
+        }
+    }
+    
+    // Aplicar limites físicos
+    if (robot_arm.base.angle > robot_arm.base.max_angle) robot_arm.base.angle = robot_arm.base.max_angle;
+    if (robot_arm.base.angle < robot_arm.base.min_angle) robot_arm.base.angle = robot_arm.base.min_angle;
+    if (robot_arm.shoulder.angle > robot_arm.shoulder.max_angle) robot_arm.shoulder.angle = robot_arm.shoulder.max_angle;
+    if (robot_arm.shoulder.angle < robot_arm.shoulder.min_angle) robot_arm.shoulder.angle = robot_arm.shoulder.min_angle;
+    if (robot_arm.elbow.angle > robot_arm.elbow.max_angle) robot_arm.elbow.angle = robot_arm.elbow.max_angle;
+    if (robot_arm.elbow.angle < robot_arm.elbow.min_angle) robot_arm.elbow.angle = robot_arm.elbow.min_angle;
+    if (robot_arm.wrist.angle > robot_arm.wrist.max_angle) robot_arm.wrist.angle = robot_arm.wrist.max_angle;
+    if (robot_arm.wrist.angle < robot_arm.wrist.min_angle) robot_arm.wrist.angle = robot_arm.wrist.min_angle;
+    
+    // Aplicar abertura da pinça
+    robot_arm.gripper.opening = gripper_opening;
+    
+    glutPostRedisplay();
+}
 
 static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;
 
@@ -231,11 +392,17 @@ void Desenha(void)
     glColor3f (1.0, 1.0, 1.0);
     glLineWidth (1.5);
 
-    if (AW==1) {Animacao0();} // Anima��o de movimiento 
-    if (ASW==1)
-       {Animacao2();}  // Anima��o de um planta de fabrica
-    else
-       {BrazoRobot();}
+    // Aplicar rotações de câmera
+   //  glRotatef((GLfloat)rotAngle, 0.0, 0.0, 1.0);  // Rotação no eixo Z
+   //  glRotatef((GLfloat)rotAngle2, 0.0, 1.0, 0.0); // Rotação no eixo Y
+
+    if (AW==1) {Animacao0();} // Animação de movimiento 
+    if (ASW==1) {Animacao2();}  // Animação de um planta de fabrica
+    if (APW==1) {Animacao3();}  // Animação Pick and Place com Física
+
+    // Sempre renderizar o braço robótico
+    BrazoRobot();
+    
 	// Executa os comandos OpenGL
 	glutSwapBuffers();
 }
@@ -274,15 +441,8 @@ void GerenciaMouse(int button, int state, int x, int y)
 			if (angle <= 130) angle += 5;
 		}
 	if (button == GLUT_MIDDLE_BUTTON)
-		if (state == GLUT_DOWN) {  // Zoom-out
-			if(Solido==0)
-			  {
-                Solido=1;
-              }
-            else
-              {
-                Solido=0;
-              }
+		if (state == GLUT_DOWN) {  // Toggle modo sólido
+			robot_arm_set_solid_mode(&robot_arm, !robot_arm.solid_mode);
 		}
 		
 	EspecificaParametrosVisualizacao();
@@ -293,91 +453,73 @@ void keyboard (unsigned char key, int x, int y)
 {
    switch (key) {
       case '/':
-//         rotAngle += 0.05;
-         rotAngle = rotAngle + 0.05;
+         rotAngle = rotAngle + 5.0;
          glRotatef((GLfloat)rotAngle, 0.0, 0.0, 0.1);
          glutPostRedisplay();	
          break;
       case '*':
-//         rotAngle -= 0.05;
-         rotAngle = rotAngle - 0.05;
+         rotAngle = rotAngle - 5.0;
          glRotatef((GLfloat)rotAngle, 0.0, 0.0, 0.1);
-         //if (rotAngle >= 360.) rotAngle = 0.;
          glutPostRedisplay();	
          break;
       case '+':
-//         rotAngle += 0.05;
-         rotAngle2 = rotAngle2 + 0.05;
+         rotAngle2 = rotAngle2 + 5.0;
          glRotatef((GLfloat)rotAngle2, 0, 1.0, 0.0);
          glutPostRedisplay();	
          break;
       case '-':
-//         rotAngle -= 0.05;
-         rotAngle2 = rotAngle2 - 0.05;
+         rotAngle2 = rotAngle2 - 5.0;
          glRotatef((GLfloat)rotAngle2, 0, 1.0, 0.0);
-         //if (rotAngle >= 360.) rotAngle = 0.;
          glutPostRedisplay();	
          break;         
       case '1':
-         if (Base>=-(LimBase))
-            {Base = Base-5;}//cint(Base - 5) % 360;
+         robot_arm_move_base(&robot_arm, -5.0f);
          glutPostRedisplay();
          break;
       case '3':
-         if (Base<=(LimBase))
-            {Base = Base+5;}//cint(Base + 5) % 360;
+         robot_arm_move_base(&robot_arm, 5.0f);
          glutPostRedisplay();
          break;
                   
       case '2':
-         if (Brazo>=(180-LimBrazo))
-            {Brazo = (Brazo - 5);}// % 360;}
+         robot_arm_move_shoulder(&robot_arm, -5.0f);
          glutPostRedisplay();
          break;
-      case '5':
-         if (Brazo<=(LimBrazo))
-            {Brazo = (Brazo + 5);}// % 360;}
+      case '8':
+         robot_arm_move_shoulder(&robot_arm, 5.0f);
          glutPostRedisplay();
          break;
                   
       case '4':
-         //AnteBrazo = (AnteBrazo - 5) % 360;
-         if (AnteBrazo>=-(LimAnteBrazo))
-            {AnteBrazo = (AnteBrazo - 5);}// % 360;}
+         robot_arm_move_elbow(&robot_arm, -5.0f);
          glutPostRedisplay();
          break;
       case '6':
-         //AnteBrazo = (AnteBrazo + 5) % 360;
-         if (AnteBrazo<=(LimAnteBrazo))
-            {AnteBrazo = (AnteBrazo + 5);}// % 360;}
+         robot_arm_move_elbow(&robot_arm, 5.0f);
          glutPostRedisplay();
          break;
          
       case '7':
-         //Mano = (Mano - 5) % 360;
-         if (Mano>=-(LimMano))
-            {Mano = (Mano - 5);}// % 360;}
+         robot_arm_move_wrist(&robot_arm, -5.0f);
          glutPostRedisplay();
          break;         
       case '9':
-         //Mano = (Mano + 5) % 360;
-         if (Mano<=(LimMano))
-            {Mano = (Mano + 5);}// % 360;}
+         robot_arm_move_wrist(&robot_arm, 5.0f);
          glutPostRedisplay();
          break;
 
-      case ',':
-         if (Pinza>=0.70)
-            {Pinza = (Pinza - 0.05);}// % 360;
-         glutPostRedisplay();
-         break;         
       case '0':
-         if (Pinza<=1.1)
-            {Pinza = (Pinza + 0.05);}// % 360;
+         robot_arm_move_gripper(&robot_arm, 0.05f);
+         glutPostRedisplay();
+         break;
+                  
+      case ',':
+         robot_arm_move_gripper(&robot_arm, -0.05f);
          glutPostRedisplay();
          break;
          
       case 'a':
+      case 'A':
          if (AW==0)
             {AW=1;}
          else
@@ -385,13 +527,30 @@ void keyboard (unsigned char key, int x, int y)
          glutPostRedisplay();
          break;         
       case 's':
+      case 'S':
          if (ASW==0)
             {ASW=1;}
          else
-            {ASW=0;}         glutPostRedisplay();
-         break;         
+            {ASW=0;}
+         glutPostRedisplay();
+         break;
+         
+      case 'r':
+      case 'R':
+         // Reset das posições
+         robot_arm_init(&robot_arm);
+         glutPostRedisplay();
+         break;
                   
-      case 27:
+      case 'p':
+         if (APW==0)
+            {APW=1;}
+         else
+            {APW=0;}
+         glutPostRedisplay();
+         break;
+                  
+      case 27: // ESC
          exit(0);
          break;
       default:
