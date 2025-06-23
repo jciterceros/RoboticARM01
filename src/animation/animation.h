@@ -2,5 +2,7 @@
 #define ANIMATION_H
 
 void Animacao(void);
+void Animacao0(void);
+void Animacao1(void);
 
 #endif // ANIMATION_H 

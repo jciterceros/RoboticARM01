@@ -1,5 +1,4 @@
 # Compilados e binários
-bin/
 *.o
 *.obj
 *.so
