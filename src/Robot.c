@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include "robot/robot_arm.h"
+#include "input/input_handler.h"
+#include "graphics/graphics_init.h"
 
 // Variáveis globais para compatibilidade
-static int AW=0,ASW=0,APW=0;
+static int anim_flags[3] = {0, 0, 0}; // AW, ASW, APW
 static int SW=0, SWB=0, SWBR=0, SWABR=0, SWMA=0;
 static int i=0,j=0,k=0;
 static int Xmouse=0,Ymouse=0;
@@ -24,65 +26,10 @@ void Animacao3();
 // Inicializa parâmetros de rendering
 void Inicializa (void)
 { 
-   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    
-   GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
-	GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};	   // "cor" 
-//	GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho" 
-	GLfloat luzEspecular[4]={-0.5, -0.5, -0.5, 1.0};// "brilho" 
-
-	
-//	GLfloat posicaoLuz[4]={0.0, 50.0, 50.0, 1.0};
-	GLfloat posicaoLuz[4]={0.0, 150.0, 50.0, 1.0};
-//	GLfloat posicaoLuz[4]={00.0, 253.0, 150.0, 15.0};
-
-	// Capacidade de brilho do material
-	GLfloat especularidade[4]={1.0,1.0,1.0,1.0}; 
-	GLint especMaterial = 60;
-
-
- 	// Especifica que a cor de fundo da janela será preta
-	// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-	glClearColor(0.0f, 0.25f, 0.25f, 1.0f); // fundo atualmente cinza
-	
-	// Habilita o modelo de colorização de Gouraud
-	glShadeModel(GL_SMOOTH);
-
-	// Define a refletância do material 
-	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
-	// Define a concentração do brilho
-	glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
-
-	// Ativa o uso da luz ambiente 
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
-
-	// Define os parâmetros da luz de número 0
-	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente); 
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
-	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
-	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
-
-	// Habilita a definição da cor do material a partir da cor corrente
-	glEnable(GL_COLOR_MATERIAL);
-	//Habilita o uso de iluminação
-	glEnable(GL_LIGHTING);  
-	// Habilita a luz de número 0
-	glEnable(GL_LIGHT0);
-	// Habilita o depth-buffering
-	glEnable(GL_DEPTH_TEST);
-
+    graphics_init();
     angle=45; // Distancia el Objeto
-    //Base = 0;
-    //Brazo = 157.5; 
-    //AnteBrazo = -157.5; 
-    //Mano = 0;
-
-    // Inicializar o braço robótico
     robot_arm_init(&robot_arm);
-
     Animacao1();
-    
 }
 
 // Função usada para especificar o volume de visualização
@@ -392,13 +339,12 @@ void Desenha(void)
     glColor3f (1.0, 1.0, 1.0);
     glLineWidth (1.5);
 
-    // Aplicar rotações de câmera
-   //  glRotatef((GLfloat)rotAngle, 0.0, 0.0, 1.0);  // Rotação no eixo Z
-   //  glRotatef((GLfloat)rotAngle2, 0.0, 1.0, 0.0); // Rotação no eixo Y
+    // A lógica de rotação da câmera foi movida para o input handler
+    // e precisa ser refatorada para atualizar a matriz de visão aqui.
 
-    if (AW==1) {Animacao0();} // Animação de movimiento 
-    if (ASW==1) {Animacao2();}  // Animação de um planta de fabrica
-    if (APW==1) {Animacao3();}  // Animação Pick and Place com Física
+    if (anim_flags[0]==1) {Animacao0();} // Animação de movimiento 
+    if (anim_flags[1]==1) {Animacao2();}  // Animação de um planta de fabrica
+    if (anim_flags[2]==1) {Animacao3();}  // Animação Pick and Place com Física
 
     // Sempre renderizar o braço robótico
     BrazoRobot();
@@ -407,170 +353,31 @@ void Desenha(void)
 	glutSwapBuffers();
 }
 
-/* change view angle */
-/* ARGSUSED1 */
-static void special(int k, int x, int y)
-{
-  switch (k) {
-  case GLUT_KEY_UP:
-    view_rotx += 5.0;
-    break;
-  case GLUT_KEY_DOWN:
-    view_rotx -= 5.0;
-    break;
-  case GLUT_KEY_LEFT:
-    view_roty += 5.0;
-    break;
-  case GLUT_KEY_RIGHT:
-    view_roty -= 5.0;
-    break;
-  default:
-    return;
-  }
-  glutPostRedisplay();
-}
-
-void GerenciaMouse(int button, int state, int x, int y)
-{
-	if (button == GLUT_LEFT_BUTTON)
-		if (state == GLUT_DOWN) {  // Zoom-in
-			if (angle >= 10) angle -= 5;
-		}
-	if (button == GLUT_RIGHT_BUTTON)
-		if (state == GLUT_DOWN) {  // Zoom-out
-			if (angle <= 130) angle += 5;
-		}
-	if (button == GLUT_MIDDLE_BUTTON)
-		if (state == GLUT_DOWN) {  // Toggle modo sólido
-			robot_arm_set_solid_mode(&robot_arm, !robot_arm.solid_mode);
-		}
-		
-	EspecificaParametrosVisualizacao();
-	glutPostRedisplay();
-}
-
-void keyboard (unsigned char key, int x, int y)
-{
-   switch (key) {
-      case '/':
-         rotAngle = rotAngle + 5.0;
-         glRotatef((GLfloat)rotAngle, 0.0, 0.0, 0.1);
-         glutPostRedisplay();	
-         break;
-      case '*':
-         rotAngle = rotAngle - 5.0;
-         glRotatef((GLfloat)rotAngle, 0.0, 0.0, 0.1);
-         glutPostRedisplay();	
-         break;
-      case '+':
-         rotAngle2 = rotAngle2 + 5.0;
-         glRotatef((GLfloat)rotAngle2, 0, 1.0, 0.0);
-         glutPostRedisplay();	
-         break;
-      case '-':
-         rotAngle2 = rotAngle2 - 5.0;
-         glRotatef((GLfloat)rotAngle2, 0, 1.0, 0.0);
-         glutPostRedisplay();	
-         break;         
-      case '1':
-         robot_arm_move_base(&robot_arm, -5.0f);
-         glutPostRedisplay();
-         break;
-      case '3':
-         robot_arm_move_base(&robot_arm, 5.0f);
-         glutPostRedisplay();
-         break;
-                  
-      case '2':
-         robot_arm_move_shoulder(&robot_arm, -5.0f);
-         glutPostRedisplay();
-         break;
-      case '8':
-         robot_arm_move_shoulder(&robot_arm, 5.0f);
-         glutPostRedisplay();
-         break;
-                  
-      case '4':
-         robot_arm_move_elbow(&robot_arm, -5.0f);
-         glutPostRedisplay();
-         break;
-      case '6':
-         robot_arm_move_elbow(&robot_arm, 5.0f);
-         glutPostRedisplay();
-         break;
-         
-      case '7':
-         robot_arm_move_wrist(&robot_arm, -5.0f);
-         glutPostRedisplay();
-         break;         
-      case '9':
-         robot_arm_move_wrist(&robot_arm, 5.0f);
-         glutPostRedisplay();
-         break;
-
-      case '0':
-         robot_arm_move_gripper(&robot_arm, 0.05f);
-         glutPostRedisplay();
-         break;
-                  
-      case ',':
-         robot_arm_move_gripper(&robot_arm, -0.05f);
-         glutPostRedisplay();
-         break;
-         
-      case 'a':
-      case 'A':
-         if (AW==0)
-            {AW=1;}
-         else
-            {AW=0;}
-         glutPostRedisplay();
-         break;         
-      case 's':
-      case 'S':
-         if (ASW==0)
-            {ASW=1;}
-         else
-            {ASW=0;}
-         glutPostRedisplay();
-         break;
-         
-      case 'r':
-      case 'R':
-         // Reset das posições
-         robot_arm_init(&robot_arm);
-         glutPostRedisplay();
-         break;
-                  
-      case 'p':
-         if (APW==0)
-            {APW=1;}
-         else
-            {APW=0;}
-         glutPostRedisplay();
-         break;
-                  
-      case 27: // ESC
-         exit(0);
-         break;
-      default:
-         break;
-   }
-}
+/* As funções de input (special, GerenciaMouse, keyboard) foram completamente
+   movidas para o módulo src/input/input_handler.c */
 
 int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
-   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);//(GLUT_DOUBLE | GLUT_RGB);
-   glutInitWindowSize (500, 500); 
-   glutInitWindowPosition (350, 250);
-   glutCreateWindow ("Robotic ARM EDGE Visualizacao 3D... JciTech");
-   glutDisplayFunc(Desenha); 
-   glutReshapeFunc(AlteraTamanhoJanela);
-   glutMouseFunc(GerenciaMouse);
-   glutKeyboardFunc(keyboard);
-   glutSpecialFunc(special);
-   Inicializa();
-   glutMainLoop();
-//   return 0;
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(1024, 720);
+	glutCreateWindow("Brazo Robotico");
+	Inicializa();
+	glutDisplayFunc(Desenha);
+	glutReshapeFunc(AlteraTamanhoJanela);
+    
+    // Configura o input handler
+    InputData input_data = {
+        .robot_arm = &robot_arm,
+        .animation_flags = anim_flags,
+        .view_angle = &angle,
+        .view_spec_func = EspecificaParametrosVisualizacao
+    };
+    init_input_handler(input_data);
+
+	glutMouseFunc(handle_mouse);
+	glutSpecialFunc(handle_special_keys);
+	glutKeyboardFunc(handle_keyboard);
+	glutMainLoop();
+   return 0;
 }

@@ -7,45 +7,47 @@ CFLAGS = -Wall -Wextra -std=c99 -O2
 LDFLAGS = -lopengl32 -lglu32 -lfreeglut
 
 # Diretórios
-SRCDIR = src
-ROBOTDIR = $(SRCDIR)/robot
-BINDIR = bin
-OBJDIR = obj
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
 
-# Arquivos fonte
-SOURCES = $(SRCDIR)/Robot.c \
-          $(ROBOTDIR)/robot_arm.c \
-          $(ROBOTDIR)/joint.c \
-          $(ROBOTDIR)/gripper.c
+# Fontes
+# Adiciona automaticamente todos os arquivos .c dos subdiretórios
+SOURCES = $(wildcard $(SRC_DIR)/*.c) \
+          $(wildcard $(SRC_DIR)/robot/*.c) \
+          $(wildcard $(SRC_DIR)/input/*.c) \
+          $(wildcard $(SRC_DIR)/graphics/*.c)
 
-# Arquivos objeto
-OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 # Executável
-TARGET = $(BINDIR)/Robot.exe
+TARGET = $(BIN_DIR)/Robot.exe
 
 # Regra principal
 all: $(TARGET)
 
 # Compilar executável
-$(TARGET): $(OBJECTS) | $(BINDIR)
+$(TARGET): $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 # Compilar arquivos objeto
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Criar diretórios
-$(BINDIR):
-	mkdir -p $(BINDIR)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+# Cria diretórios de objeto para cada subdiretório de fonte
+$(shell mkdir -p $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(dir $(SOURCES))))
 
 # Limpar
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 # Executar
 run: $(TARGET)
