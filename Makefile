@@ -16,7 +16,8 @@ BIN_DIR = bin
 SOURCES = $(wildcard $(SRC_DIR)/*.c) \
           $(wildcard $(SRC_DIR)/robot/*.c) \
           $(wildcard $(SRC_DIR)/input/*.c) \
-          $(wildcard $(SRC_DIR)/graphics/*.c)
+          $(wildcard $(SRC_DIR)/graphics/*.c) \
+          $(wildcard $(SRC_DIR)/animation/*.c)
 
 OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 

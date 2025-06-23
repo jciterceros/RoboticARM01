@@ -7,8 +7,9 @@ set "OBJ_DIR=obj"
 set "BIN_DIR=bin"
 set "TARGET=%BIN_DIR%\\Robot.exe"
 set "GRAPHICS_DIR=%SRC_DIR%\\graphics"
+set "ANIMATION_DIR=%SRC_DIR%\\animation"
 
-set "SOURCES=%SRC_DIR%\\Robot.c %ROBOT_DIR%\\joint.c %ROBOT_DIR%\\gripper.c %ROBOT_DIR%\\robot_arm.c %INPUT_DIR%\\input_handler.c %GRAPHICS_DIR%\\graphics_init.c"
+set "SOURCES=%SRC_DIR%\\Robot.c %ROBOT_DIR%\\joint.c %ROBOT_DIR%\\gripper.c %ROBOT_DIR%\\robot_arm.c %INPUT_DIR%\\input_handler.c %GRAPHICS_DIR%\\graphics_init.c %ANIMATION_DIR%\\animation.c"
 
 set "CC=gcc"
 set "CFLAGS=-Iinclude -Wall -Wextra -O2"
@@ -23,6 +24,7 @@ if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
 if not exist "%OBJ_DIR%\\robot" mkdir "%OBJ_DIR%\\robot"
 if not exist "%OBJ_DIR%\\input" mkdir "%OBJ_DIR%\\input"
 if not exist "%OBJ_DIR%\\graphics" mkdir "%OBJ_DIR%\\graphics"
+if not exist "%OBJ_DIR%\\animation" mkdir "%OBJ_DIR%\\animation"
 
 
 rem Compila todos os fontes para objetos
@@ -32,11 +34,12 @@ rem Compila todos os fontes para objetos
 %CC% %CFLAGS% -c %ROBOT_DIR%\\robot_arm.c -o %OBJ_DIR%\\robot\\robot_arm.o
 %CC% %CFLAGS% -c %INPUT_DIR%\\input_handler.c -o %OBJ_DIR%\\input\\input_handler.o
 %CC% %CFLAGS% -c %GRAPHICS_DIR%\\graphics_init.c -o %OBJ_DIR%\\graphics\\graphics_init.o
+%CC% %CFLAGS% -c %ANIMATION_DIR%\\animation.c -o %OBJ_DIR%\\animation\\animation.o
 
 
 rem Linka os objetos para criar o executável
 echo Linkando executável...
-set "OBJECTS=%OBJ_DIR%\\Robot.o %OBJ_DIR%\\robot\\joint.o %OBJ_DIR%\\robot\\gripper.o %OBJ_DIR%\\robot\\robot_arm.o %OBJ_DIR%\\input\\input_handler.o %OBJ_DIR%\\graphics\\graphics_init.o"
+set "OBJECTS=%OBJ_DIR%\\Robot.o %OBJ_DIR%\\robot\\joint.o %OBJ_DIR%\\robot\\gripper.o %OBJ_DIR%\\robot\\robot_arm.o %OBJ_DIR%\\input\\input_handler.o %OBJ_DIR%\\graphics\\graphics_init.o %OBJ_DIR%\\animation\\animation.o"
 %CC% %OBJECTS% -o %TARGET% %LDFLAGS%
 
 if %errorlevel% neq 0 (

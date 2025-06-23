@@ -4,16 +4,17 @@
 #include "robot/robot_arm.h"
 #include "input/input_handler.h"
 #include "graphics/graphics_init.h"
+#include "animation/animation.h"
 
 // Variáveis globais para compatibilidade
 static int anim_flags[3] = {0, 0, 0}; // AW, ASW, APW
-static int SW=0, SWB=0, SWBR=0, SWABR=0, SWMA=0;
+int SW=0, SWB=0, SWBR=0, SWABR=0, SWMA=0;
 static int i=0,j=0,k=0;
 static int Xmouse=0,Ymouse=0;
 static float rotAngle = 0., rotAngle2 = 0.;
 
 // Variáveis globais do braço (mantidas para compatibilidade)
-static float Base = 0, Pinza=0.70, Brazo = 0, AnteBrazo = 0, Mano = 0;
+float Base = 0, Pinza=0.70, Brazo = 0, AnteBrazo = 0, Mano = 0;
 static float LimBase = 135, LimBrazo = 180, LimAnteBrazo = 145, LimMano = 125, LimPinza=0.40;
 static int Solido = 0;
 
@@ -71,24 +72,6 @@ void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 	fAspect = (GLfloat)w/(GLfloat)h;
 
 	EspecificaParametrosVisualizacao();
-}
-
-void Animacao(void)
-{
-	//Base+=0.1f;
-	if (SW==0)
-	   {
-         Base+=0.55;
-         if (Base>=360)
-            {SW=1;}
-       }
-	else
-       {
-         Base-=3;
-         if (Base<=0)
-            {SW=0;}         
-       }
-	glutPostRedisplay();
 }
 
 void Animacao0()
